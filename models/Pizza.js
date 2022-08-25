@@ -4,10 +4,14 @@ const dateFormat = require('../utils/dateFormat');
 const PizzaSchema = new Schema(
   {
     pizzaName: {
-      type: String
+      type: String, 
+      required: true, 
+      trim: true
     },
     createdBy: {
-      type: String
+      type: String, 
+      required: true, 
+      trim: true
     },
     createdAt: {
       type: Date,
@@ -16,6 +20,8 @@ const PizzaSchema = new Schema(
     },
     size: {
       type: String,
+      required: true, 
+      enum: ['Personal', 'Small', 'Medium', 'Large', 'Extra Large'],
       default: 'Large'
     },
     toppings: [],
@@ -36,9 +42,12 @@ const PizzaSchema = new Schema(
   }
 );
 
+
 // get total count of comments and replies on retrieval
+// reduce method takes 2 params => an accumulator and currentValue. The accumulator is total and the currentValue is comment. As reduce() walks through the array, it passess the accumlating total and the current value of comment into the function, with the return of the function revising the total for the next iteration through the array. 
+
 PizzaSchema.virtual('commentCount').get(function() {
-  return this.comments.length;
+  return this.comments.reduce((total, comment) => total + comment.replies.length + 1, 0);
 });
 
 const Pizza = model('Pizza', PizzaSchema);
